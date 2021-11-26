@@ -2,7 +2,7 @@ package com.ya;
 
 import org.apache.commons.lang3.RandomStringUtils;
 
-public class CourierWithoutPasswordData implements Courier {
+public class CourierWithoutPasswordData implements CourierData {
     public final String login;
     public final String firstName;
 

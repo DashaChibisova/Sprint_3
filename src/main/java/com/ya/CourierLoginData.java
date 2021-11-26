@@ -1,6 +1,6 @@
 package com.ya;
 
-public class CourierLoginData implements Courier {
+public class CourierLoginData implements CourierData {
     public final String login;
     public final String password;
 

@@ -42,59 +42,57 @@ public class OrderClient extends RestAssuredClient {
                 .get(COURIER_PATH);
     }
     @Step
-    public ValidatableResponse orderId(int track) {
+    public int orderId(int track) {
         return given()
                 .spec(getBaseSpec())
                 .get(COURIER_PATH+"track?t=" + track)
-                .then();
+                .then()
+                .statusCode(200)
+                .extract()
+                .path("order.id");
     }
 
 
     @Step
-    public ValidatableResponse receiveOrder(int track) {
+    public Response receiveOrder(int track) {
         return given()
                 .spec(getBaseSpec())
                 .queryParam("t", track)
-                .get(COURIER_PATH + "track")
-                .then();
+                .get(COURIER_PATH + track);
     }
 
     @Step
-    public ValidatableResponse receiveOrderWithoutTrack() {
+    public String receiveOrderWithoutTrack() {
         return given()
                 .spec(getBaseSpec())
-                .queryParam("t", "")
-                .get(COURIER_PATH + "track")
-                .then();
-    }
-
-
-    @Step
-    public ValidatableResponse acceptOrder(int orderId, int courierId) {
-        return given()
-                .spec(getBaseSpec())
-                .queryParam("courierId", courierId)
-                .put(COURIER_PATH + "accept/" + orderId)
-                .then();
-
+                .get(COURIER_PATH + "track?t=")
+                .then()
+                .statusCode(400)
+                .extract()
+                .path("message");
     }
 
     @Step
-    public ValidatableResponse acceptOrderWithoutOrderId(int courierId) {
+    public String incorrectTrack(int track) {
         return given()
                 .spec(getBaseSpec())
-                .queryParam("courierId", courierId)
-                .put(COURIER_PATH + "accept/")
-                .then();
-
+                .get(COURIER_PATH + "track?t=" + track)
+                .then()
+                .statusCode(404)
+                .extract()
+                .path("message");
     }
 
     @Step
-    public ValidatableResponse acceptOrderWithoutCourierId(int orderId) {
+    public boolean acceptOrder(int orderId, int courierId) {
         return given()
                 .spec(getBaseSpec())
-                .put(COURIER_PATH + "accept/" + orderId)
-                .then();
+                .put(COURIER_PATH + "accept/" + orderId + "?courierId=" + courierId)
+                .then()
+                .assertThat()
+                .statusCode(200)
+                .extract()
+                .path("ok");
 
     }
 

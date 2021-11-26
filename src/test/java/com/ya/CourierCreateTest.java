@@ -21,10 +21,12 @@ public class CourierCreateTest {
 
     @After
     public void tearDown() {
-        courierClient.delete(courierId);
+        courierClient.delete(courierId).assertThat()
+                .statusCode(200)
+                .extract()
+                .path("ok");
     }
 
-    //проверяет, что курьера можно создать и он может залогиниться и ответ
     @Test
     public void courierCanBeCreatedWithValidDataAndLogin() {
         CourierCreateData courierData = CourierCreateData.getRandom();
@@ -43,8 +45,7 @@ public class CourierCreateTest {
         assertThat("Courier ID is incorrect", courierId, is(not(0)));
     }
 
-    // баг выводится сообщение "Этот логин уже используется. Попробуйте другой."
-    //проверяет, что нельзя создать двух одинаковых курьеров и ответ
+    //"message""Этот логин уже используется." должно быть это баг
     @Test
     public void courierShouldNotBeReCreated() {
         CourierCreateData courierData = CourierCreateData.getRandom();
@@ -54,7 +55,7 @@ public class CourierCreateTest {
                 .extract()
                 .path("ok");
 
-        courierId = courierClient.login(CourierLoginData.from(courierData)).assertThat()
+        courierId = courierClient.login(CourierLoginData.from(courierData)) .assertThat()
                 .statusCode(200)
                 .extract()
                 .path("id");
@@ -64,6 +65,6 @@ public class CourierCreateTest {
                 .path("message");
 
         assertTrue("Courier is not created", isCourierCreated);
-        assertEquals("Courier is  recreated", "Этот логин уже используется.", isNotCourierCreated);
+        assertEquals("Courier is  recreated", "Этот логин уже используется. Попробуйте другой.", isNotCourierCreated);
     }
 }

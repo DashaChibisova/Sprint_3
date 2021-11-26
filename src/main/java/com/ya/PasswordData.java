@@ -2,7 +2,7 @@ package com.ya;
 
 import org.apache.commons.lang3.RandomStringUtils;
 
-public class PasswordData implements Courier {
+public class PasswordData implements CourierData {
     public final String password;
 
     public PasswordData(String password) {

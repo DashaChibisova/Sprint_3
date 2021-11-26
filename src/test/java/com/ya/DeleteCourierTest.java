@@ -1,17 +1,23 @@
 package com.ya;
 
+import groovy.json.JsonOutput;
+import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class DeleteCourierTest {
-    private  CourierClient courierClient;
-    private  int courierId;
+    private static CourierClient courierClient;
+    private static int courierId;
 
-    @Before
-    public  void setUp() {
+    @BeforeClass
+    public static void setUp() {
         courierClient = new CourierClient();
         CourierCreateData courierData = CourierCreateData.getRandom();
         courierClient.create(courierData);
@@ -21,7 +27,7 @@ public class DeleteCourierTest {
                 .path("id");
     }
 
-    //проверяет, что можно удалить курьера
+
     @Test
     public void deleteCourierWithValidData() {
         boolean deleteCourier = courierClient.delete(courierId).assertThat()
@@ -30,8 +36,7 @@ public class DeleteCourierTest {
                 .path("ok");
         assertTrue("Courier is not delete",deleteCourier);
     }
-    //баг 404 ошибка вместо 400 "message": "Not Found."
-    //проверяет, что нельзя удалить курьера без Id
+//баг 404 ошибка вместо 400 "message": "Not Found."
     @Test
     public void deleteCourierWithoutId() {
         String deleteCourier = courierClient.deleteWithoutId().assertThat()
@@ -40,7 +45,7 @@ public class DeleteCourierTest {
                 .path("message");
         assertEquals("Недостаточно данных для удаления курьера",deleteCourier);
     }
-    // проверяет, что нельзя удалить курьера с некорректным ID
+
     @Test
     public void deleteCourierWithIncorrectId() {
         String deleteCourier = courierClient.delete(courierId + 5555 ).assertThat()

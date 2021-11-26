@@ -1,58 +1,50 @@
 package com.ya;
 
-import io.restassured.response.ValidatableResponse;
-import org.junit.After;
-import org.junit.Before;
+import io.restassured.response.Response;
 
+import org.junit.After;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertEquals;
 
 public class ReceiveOrderTest {
-    private OrderClient orderClient;
-    private int trackId;
-    private  OrderTrack orderTrack;
+    private static OrderClient orderClient;
+    private static int trackId ;
 
 
-    @Before
-    public  void setUp() {
+    @BeforeClass
+    public static void setUp() {
         orderClient = new OrderClient();
         OrderData orderOne = OrderData.getRandom();
         trackId = orderClient.createOrder(orderOne).assertThat()
                 .statusCode(201)
                 .extract()
                 .path("track");
+        System.out.println(trackId);
     }
-    //баг не отменяет/удаляяет заказы!!! выдает 400 ошибку,"message" "Недостаточно данных для поиска"
-    //заккоментила,чтобы прошли тесты
+    //баг не отменяет заказы!!! выдает 400 ошибку,"message" "Недостаточно данных для поиска"
     @After
     public void tearDown() {
 //        orderTrack = new OrderTrack(trackId);
 //        boolean cancelOrder = orderClient.cancel(orderTrack);
-
+        // assertTrue("Order is not cancel", cancelOrder); но это уже на проверку
     }
-    // проверяет, что можно получить заказ
     @Test
     public void receiveOrderSuccessful() {
-        ValidatableResponse order = orderClient.receiveOrder(trackId);
-        order.assertThat().body("data.order", not(emptyArray())).log().all();
-        order.assertThat().statusCode(200);
+        Response order = orderClient.receiveOrder(trackId);
+        order.then().assertThat().body("data.order", not(emptyArray()));
+        order.then().assertThat().statusCode(200);
     }
-    // проверяет, что нельзя получить заказ без трека
     @Test
     public void receiveErrorWithoutTrack() {
-        String order = orderClient.receiveOrderWithoutTrack().assertThat().statusCode(400)
-                .extract()
-                .path("message");
+        String order = orderClient.receiveOrderWithoutTrack();
         assertEquals("Недостаточно данных для поиска",order);
     }
-    // проверяет, что нельзя получить заказ с некорректным треком
     @Test
     public void receiveErrorWithIncorrectTrack() {
-        String order = orderClient.receiveOrder(trackId + 5555).statusCode(404)
-                .extract()
-                .path("message");
+        String order = orderClient.incorrectTrack(trackId + 555);
         assertEquals("Заказ не найден",order);
     }
 }
