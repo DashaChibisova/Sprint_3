@@ -3,11 +3,8 @@ package com.ya;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+
 
 public class CourierNotCreatedTest {
 
@@ -18,6 +15,7 @@ public class CourierNotCreatedTest {
         courierClient = new CourierClient();
     }
 
+    //проверяет, что нельзя создать курьера без пароля и ответ
     @Test
     public void courierShouldNotBeCreatedWithoutPassword() {
         CourierWithoutPasswordData courier = CourierWithoutPasswordData.getRandom();
@@ -29,6 +27,7 @@ public class CourierNotCreatedTest {
         assertEquals("Courier should not be created", "Недостаточно данных для создания учетной записи", notCreate);
     }
 
+    //проверяет, что нельзя создать курьера без логина и ответ
     @Test
     public void courierShouldNotBeCreatedWithoutLogin() {
         CourierWithoutLoginData courier = CourierWithoutLoginData.getRandom();

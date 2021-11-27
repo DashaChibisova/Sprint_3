@@ -16,8 +16,7 @@ public class CourierLoginTest {
         courierClient = new CourierClient();
         courierData = CourierCreateData.getRandom();
         courierClient.create(courierData);
-        courierId = courierClient.login(CourierLoginData.from(courierData)).assertThat()
-                .statusCode(200)
+        courierId = courierClient.login(CourierLoginData.from(courierData))
                 .extract()
                 .path("id");
     }
@@ -26,7 +25,7 @@ public class CourierLoginTest {
     public static void tearDown() {
         courierClient.delete(courierId);
     }
-
+   //проверяет, что нельзя залогиниться без логина и ответ
     @Test
     public void courierNotCanLoginWithoutLogin() {
         PasswordData courierLogin = PasswordData.from(courierData);
@@ -40,14 +39,18 @@ public class CourierLoginTest {
 
 
     //баг висит и выдает 504 ошибку
+    //проверяет, что нельзя залогиниться без пароля и ответ
     @Test
     public void courierNotCanLoginWithoutPassword() {
-//        LoginData courierLogin = LoginData.from(courierData);
-//        String isNotCourierPassword = courierClient.incompleteDataForLogin(courierLogin);
-//
-//        assertEquals( "Courier is  login", "Недостаточно данных для входа",isNotCourierPassword );
-    }
+        LoginData courierLogin = LoginData.from(courierData);
+        String isNotCourierPassword = courierClient.login(courierLogin)
+                .statusCode(400)
+                .extract()
+                .path("message");
 
+        assertEquals("Courier is  login", "Недостаточно данных для входа", isNotCourierPassword);
+    }
+    //проверяет, что нельзя залогиниться с неправильным паролем или логином и ответ
     @Test
     public void courierLoginWithInvalidData() {
         String isInvalidLogin = courierClient.login(CourierLoginData.fromInvalidDataLogin(courierData))

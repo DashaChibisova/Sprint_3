@@ -10,7 +10,7 @@ public class CourierClient extends RestAssuredClient {
     private static final String COURIER_PATH = "api/v1/courier/";
 
     @Step
-    public ValidatableResponse create(CourierData courierData) {
+    public ValidatableResponse create(Courier courierData) {
         return given()
                 .spec(getBaseSpec())
                 .body(courierData)
@@ -21,7 +21,7 @@ public class CourierClient extends RestAssuredClient {
     }
 
     @Step
-    public ValidatableResponse login(CourierData courier) {
+    public ValidatableResponse login(Courier courier) {
         return given()
                 .spec(getBaseSpec())
                 .body(courier)

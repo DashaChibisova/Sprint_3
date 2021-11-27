@@ -1,24 +1,17 @@
 package com.ya;
 
-import groovy.json.JsonOutput;
-import jdk.jfr.Description;
-import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class DeleteCourierTest {
-    private static CourierClient courierClient;
-    private static int courierId;
+    private  CourierClient courierClient;
+    private  int courierId;
 
-    @BeforeClass
-    public static void setUp() {
+    @Before
+    public  void setUp() {
         courierClient = new CourierClient();
         CourierCreateData courierData = CourierCreateData.getRandom();
         courierClient.create(courierData);
@@ -28,7 +21,7 @@ public class DeleteCourierTest {
                 .path("id");
     }
 
-
+    //проверяет, что можно удалить курьера
     @Test
     public void deleteCourierWithValidData() {
         boolean deleteCourier = courierClient.delete(courierId).assertThat()
@@ -37,9 +30,9 @@ public class DeleteCourierTest {
                 .path("ok");
         assertTrue("Courier is not delete",deleteCourier);
     }
-//баг 404 ошибка вместо 400 "message": "Not Found."
+    //баг 404 ошибка вместо 400 "message": "Not Found."
+    //проверяет, что нельзя удалить курьера без Id
     @Test
-    @Description("Bag: Error status code 400, massage : \"Not Found.\"")
     public void deleteCourierWithoutId() {
         String deleteCourier = courierClient.deleteWithoutId().assertThat()
                 .statusCode(400)
@@ -47,7 +40,7 @@ public class DeleteCourierTest {
                 .path("message");
         assertEquals("Недостаточно данных для удаления курьера",deleteCourier);
     }
-
+    // проверяет, что нельзя удалить курьера с некорректным ID
     @Test
     public void deleteCourierWithIncorrectId() {
         String deleteCourier = courierClient.delete(courierId + 5555 ).assertThat()
