@@ -57,7 +57,6 @@ public class CreateOrderTest {
                 .statusCode(201)
                 .extract()
                 .path("track");
-        System.out.println(trackId);
 
         assertThat("Courier track is incorrect", trackId, is(not(0)));
     }

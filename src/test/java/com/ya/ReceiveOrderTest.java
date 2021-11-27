@@ -2,6 +2,7 @@ package com.ya;
 
 import io.restassured.response.Response;
 
+import io.restassured.response.ValidatableResponse;
 import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -33,18 +34,22 @@ public class ReceiveOrderTest {
     }
     @Test
     public void receiveOrderSuccessful() {
-        Response order = orderClient.receiveOrder(trackId);
-        order.then().assertThat().body("data.order", not(emptyArray()));
-        order.then().assertThat().statusCode(200);
+        ValidatableResponse order = orderClient.receiveOrder(trackId);
+        order.assertThat().body("data.order", not(emptyArray())).log().all();
+        order.assertThat().statusCode(200);
     }
     @Test
     public void receiveErrorWithoutTrack() {
-        String order = orderClient.receiveOrderWithoutTrack();
+        String order = orderClient.receiveOrderWithoutTrack().assertThat().statusCode(400)
+                .extract()
+                .path("message");
         assertEquals("Недостаточно данных для поиска",order);
     }
     @Test
     public void receiveErrorWithIncorrectTrack() {
-        String order = orderClient.incorrectTrack(trackId + 555);
+        String order = orderClient.receiveOrder(trackId + 5555).statusCode(404)
+                .extract()
+                .path("message");
         assertEquals("Заказ не найден",order);
     }
 }

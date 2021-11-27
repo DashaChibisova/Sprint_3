@@ -24,10 +24,7 @@ public class CourierLoginTest {
 
     @AfterClass
     public static void tearDown() {
-        courierClient.delete(courierId).assertThat()
-                .statusCode(200)
-                .extract()
-                .path("ok");
+        courierClient.delete(courierId);
     }
 
     @Test

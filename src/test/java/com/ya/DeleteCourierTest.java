@@ -1,6 +1,7 @@
 package com.ya;
 
 import groovy.json.JsonOutput;
+import jdk.jfr.Description;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -38,6 +39,7 @@ public class DeleteCourierTest {
     }
 //баг 404 ошибка вместо 400 "message": "Not Found."
     @Test
+    @Description("Bag: Error status code 400, massage : \"Not Found.\"")
     public void deleteCourierWithoutId() {
         String deleteCourier = courierClient.deleteWithoutId().assertThat()
                 .statusCode(400)

@@ -15,6 +15,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class OrderListTest {
 
@@ -37,25 +38,19 @@ public class OrderListTest {
 
     @Test
     public void checkReturnListOrderData() {
-        for (int i = 0; i < 1; i++) {
+        for (int i = 0; i < 5; i++) {
             OrderData orderOne = OrderData.getRandom();
             trackId.add(orderClient.createOrder(orderOne).assertThat()
                     .statusCode(201)
                     .extract()
                     .path("track"));
         }
-
-       JsonPath jsonPath = orderClient.orderResponseBody().getBody().jsonPath();
+        JsonPath jsonPath = orderClient.orderResponseBody().getBody().jsonPath();
         List<LinkedHashMap<String, Object>> orderLevelReasons = jsonPath.getList("orders");
-        String s = null;
-        // берем элементы массива
+        String orderId;
         for (int i = 0; i < orderLevelReasons.size(); i++) {
-            s = String.valueOf(orderLevelReasons.get(i).get("id"));
-            System.out.println(s);
+            orderId = String.valueOf(orderLevelReasons.get(i).get("id"));
+            assertTrue(orderId.matches("\\d+"));
         }
-
-        System.out.println(orderLevelReasons.size());
-        System.out.println(s);
-        System.out.println(s.matches(".(id=)\\d+"));
     }
 }
